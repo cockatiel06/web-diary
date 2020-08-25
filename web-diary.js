@@ -379,7 +379,6 @@ window.onload = () => {
             // リストに追加
             addToList(key);
         } catch (error) {
-            // データを取得できない場合
             localStorage.removeItem(key);
             if (localStorage.length === 0) {
                 create();
