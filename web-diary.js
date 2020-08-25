@@ -41,7 +41,7 @@ function removeAllChildren(element) {
 addFileInput.addEventListener('change', addFile, false);
 
 /**
- * 記事にファイルを添付する
+ * 記事に画像/動画を添付する
  */
 function addFile() {
     // 選択されたファイル
@@ -132,8 +132,7 @@ function save(key) {
         console.log(`ローカルストレージに保存できませんでした`);
     }
 
-    // 保存した記事をリストに追加する
-    addToList(key);
+    addToList(key); // 保存した記事をリストに追加する
 }
 
 /**
@@ -183,13 +182,13 @@ function addToList(key) {
 
     // リストに追加する
     if (saveList.querySelector(`li[data-key="${key}"]`) != null) {
-        // 上書き保存
+        // 更新
         const savedItem = saveList.querySelector(`li[data-key="${key}"]`);
         removeAllChildren(savedItem);
         savedItem.appendChild(container);
         loadData(savedItem);
     } else {
-        // 新規作成
+        // 作成
         const savedItem = document.createElement('li');
         savedItem.className = 'saved-item';
         savedItem.dataset.key = key;
@@ -200,7 +199,7 @@ function addToList(key) {
     }
 }
 
-// 新規作成ボタン
+// 新規作成
 createButton.addEventListener('click', create, false);
 
 /**
@@ -261,7 +260,7 @@ function loadData(listItem) {
             loadData(saveList.firstChild);
         }
     } else {
-        // 保存データを取得できなかった場合の処理
+        // 保存データを取得できなかった場合
         listItem.remove();
         if (saveList.firstChild != null) {
             loadData(saveList.firstChild);
@@ -272,7 +271,7 @@ function loadData(listItem) {
     }
 }
 
-// ダイアログを表示して入力された検索キーワードを取得する
+// ダイアログを表示して検索キーワードを取得する
 searchButton.onclick = () => {
     closeButton.onclick(); // 検索結果を閉じる
     if (searchDialog.hasAttribute('open') === false) {
