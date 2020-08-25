@@ -368,6 +368,7 @@ window.onload = () => {
                 return;
             }
 
+            // データを表示してリストに追加
             titleInput.value = data.title;
             contentArea.innerHTML = data.content;
             createdDate.innerText = data.createdAt;
