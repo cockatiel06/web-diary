@@ -368,10 +368,12 @@ window.onload = () => {
                 return;
             }
 
-            // データを表示してリストに追加
+            // データを表示
             titleInput.value = data.title;
             contentArea.innerHTML = data.content;
             createdDate.innerText = data.createdAt;
+            
+            // リストに追加
             addToList(key);
         } catch (error) {
             // データを取得できない場合
