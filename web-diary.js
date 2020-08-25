@@ -128,8 +128,8 @@ function save(key) {
         } else {
             loadData(saveList.firstChild);
         }
-        alert(`${data.title}を保存できませんでした。\nローカルストレージの空き領域がありません。`);
-        console.log(`${data.title}をローカルストレージに保存できませんでした`);
+        alert(`「${data.title}」を保存できませんでした。\nローカルストレージの空き領域がありません。`);
+        console.log(`${data.title} をローカルストレージに保存できませんでした`);
     }
 
     addToList(key); // 保存した記事をリストに追加する
