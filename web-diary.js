@@ -293,8 +293,10 @@ searchButton.onclick = () => {
     // キーワードが入力された場合
     searchInput.addEventListener('change', function () {
         let keyword = searchInput.value;
+        
+        // リストの項目数ループして検索する
         for (let target of saveList.getElementsByClassName('saved-item')) {
-            search(target, keyword); // 検索
+            search(target, keyword);
         }
         searchInput.value = null; // 検索フォームをリセット
         searchDialog.close(); // ダイアログを閉じる
@@ -310,7 +312,9 @@ function search(target, keyword) {
     keyword = new RegExp(keyword, 'ig');
     let result = target.innerText.match(keyword);
     if (result === null) {
-        target.style.display = 'none'; // 検索キーワードが一致しない場合は非表示にする（一致した記事がリストに表示される）
+        // 検索キーワードが一致しない場合は非表示にする
+        // 一致した記事がリストに表示される
+        target.style.display = 'none';
         return;
     }
 }
