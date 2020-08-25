@@ -41,7 +41,7 @@ function removeAllChildren(element) {
 addFileInput.addEventListener('change', addFile, false);
 
 /**
- * 記事に画像/動画を添付する
+ * 画像/動画を添付する
  */
 function addFile() {
     // 選択されたファイル
