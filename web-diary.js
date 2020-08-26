@@ -128,7 +128,7 @@ function save(key) {
         } else {
             loadData(saveList.firstChild);
         }
-        alert(`「${data.title}」を保存できませんでした。ローカルストレージの空き領域がありません。不要な記事は削除してください。`);
+        alert(`「${data.title}」を保存できませんでした。\nローカルストレージの空き領域がありません。\n不要な記事は削除してください。`);
         console.log(`「${data.title}」をローカルストレージに保存できませんでした`);
     }
 
