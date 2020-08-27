@@ -325,7 +325,7 @@ function loadData(listItem) {
         } catch (error) {
             listItem.remove();
             removeData(key);
-            // loadData(saveList.firstChild);
+            loadData(saveList.firstChild);
             console.log(error.message);
         }
 
@@ -343,7 +343,7 @@ function loadData(listItem) {
         deleteButton.onclick = () => {
             listItem.remove();
             removeData(key);
-            // loadData(saveList.firstChild);
+            loadData(saveList.firstChild);
         }
     } else {
         listItem.remove();
