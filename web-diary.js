@@ -306,7 +306,7 @@ function loadData(listItem) {
             getData(key);
         } catch (error) {
             removeData(key);
-            saveButton.disabled = true;
+            saveButton.disabled = true; // 保存無効化（再選択で解除）
             console.log(error.message);
         }
 
