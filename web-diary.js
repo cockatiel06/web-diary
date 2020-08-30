@@ -314,7 +314,7 @@ function loadData(listItem) {
         closeButton.onclick = () => { listStyle(listItem) }; // 背景色の設定
         deleteButton.onclick = () => { removeData(key) }; // 削除
     } else {
-        listItem.remove();
+        removeData(key);
     }
 }
 
