@@ -23,9 +23,7 @@ const helpDialog = document.getElementById('help-dialog');
 const helpDialogCloseButton = document.getElementById('help-dialog-close-button');
 
 // ドロップ禁止
-document.ondragstart = () => {
-    return false;
-}
+document.ondragstart = () => false;
 
 /**
  * 日付の桁を揃える
@@ -60,52 +58,40 @@ function listStyle(listItem) {
     }
 }
 
-// ダイアログを表示して検索キーワードを取得する
+// リスト内を検索する
 searchButton.onclick = () => {
-    closeButton.onclick(); // 検索結果を閉じる
+    // 検索結果をリセット
+    closeButton.onclick();
+
+    // ダイアログを表示
     if (searchDialog.hasAttribute('open') === false) {
-        searchDialog.showModal(); // ダイアログを表示
+        searchDialog.showModal();
     }
 
-    // ダイアログを閉じるボタンが押された場合
+    // ダイアログを閉じるボタン
     searchDialogCloseButton.onclick = () => {
         searchInput.value = null;
         searchDialog.close();
     }
 
     // Esc キーが押された場合
-    searchDialog.addEventListener('cancel', function () {
+    searchDialog.addEventListener('cancel', () => {
         searchInput.value = null;
     }, false);
 
     // キーワードが入力された場合
-    searchInput.addEventListener('change', function () {
-        let keyword = searchInput.value;
-        
+    searchInput.addEventListener('change', () => {
+        searchDialog.close(searchInput.value);
+        searchInput.value = null;
+
         // リストの項目数ループして検索する
+        let keyword = new RegExp(searchDialog.returnValue, 'i');
         for (let target of saveList.getElementsByClassName('saved-item')) {
-            search(target, keyword);
+            if (keyword.test(target.textContent) === false) {
+                target.style.display = 'none'; // 一致しない項目は非表示にする
+            }
         }
-
-        searchInput.value = null; // 検索フォームをリセット
-        searchDialog.close(); // ダイアログを閉じる
     }, false);
-}
-
-/**
- * リストを検索する
- * @param {HTMLElement} target 検索対象のリストアイテム
- * @param {String} keyword 検索キーワード
- */
-function search(target, keyword) {
-    keyword = new RegExp(keyword, 'ig');
-    let result = target.innerText.match(keyword);
-    if (result === null) {
-        // 検索キーワードが一致しない場合は非表示にする
-        // 一致した記事がリストに表示される
-        target.style.display = 'none';
-        return;
-    }
 }
 
 // ヘルプを表示
@@ -120,13 +106,8 @@ helpDialogCloseButton.onclick = () => {
     helpDialog.close();
 }
 
-// ファイルを読み込む
-addFileInput.addEventListener('change', addFile, false);
-
-/**
- * ファイルを添付する
- */
-function addFile() {
+// 画像、動画を添付する
+addFileInput.addEventListener('change', () => {
     // 選択されたファイル
     const file = addFileInput.files[0];
 
@@ -144,6 +125,7 @@ function addFile() {
         if (file.type === 'video/mp4') {
             // 動画ファイル
             const video = document.createElement('video');
+            video.setAttribute('contenteditable', 'false');
             video.setAttribute('controlslist', 'nodownload');
             video.setAttribute('disablepictureinpicture', '');
             video.setAttribute('controls', '');
@@ -160,11 +142,11 @@ function addFile() {
     }
 
     addFileInput.value = null; // リセット
-}
+}, false);
 
 /**
  * ローカルストレージに記事を保存する
- * @param {String} key キーの名称
+ * @param {String} key 保存（更新）するキーの名称
  */
 function save(key) {
     // 保存日時
@@ -220,7 +202,7 @@ function addToList(key) {
     title.className = 'list-title';
     text.className = 'list-text';
 
-    // サムネイル
+    // サムネイル（動画優先）
     if (contentArea.getElementsByTagName('video').length > 0) {
         video.setAttribute('loop', '');
         video.setAttribute('muted', '');
@@ -269,10 +251,8 @@ function addToList(key) {
 // 新規作成
 createButton.addEventListener('click', create, false);
 
-/**
- * 記事を作成する
- */
 function create() {
+    // 表示内容を削除
     titleInput.value = null;
     removeAllChildren(contentArea);
     removeAllChildren(createdDate);
@@ -280,33 +260,33 @@ function create() {
 }
 
 /**
- * 引数に渡したキーをローカルストレージから削除する
- * @param {String} key キーの名称
+ * 引数に渡されたキーを削除する
+ * @param {String} key 削除するキーの名称
  */
 function removeData(key) {
+    // ローカルストレージとリストから削除する
     localStorage.removeItem(key);
-    if (localStorage.length === 0) {
-        create(); // 保存データがない場合は作成する
+    if (saveList.querySelector(`li[data-key="${key}"]`) != null) {
+        saveList.querySelector(`li[data-key="${key}"]`).remove();
     }
+
+    // 最新の記事を表示（存在しない場合は作成する）
+    saveList.firstChild != null ? loadData(saveList.firstChild) : create();
 }
 
 /**
  * ローカルストレージからデータを取得して表示する
- * @param {String} key キーの名称
+ * @param {String} key 取得するキーの名称
  */
 function getData(key) {
-    // データを取得
     let data = JSON.parse(localStorage.getItem(key));
-
-    // プロパティの存在確認
-    if ((data.title === undefined) || (data.content === undefined) || (data.createdAt === undefined)) {
-        throw new Error(`キー (${key}) の値を取得できません`);
+    if (("title" in data) && ("content" in data) && ("createdAt" in data)) {
+        titleInput.value = data.title;
+        contentArea.innerHTML = data.content;
+        createdDate.innerText = data.createdAt;
+    } else {
+        throw new Error('プロパティが存在しません');
     }
-
-    // 取得したデータを表示
-    titleInput.value = data.title;
-    contentArea.innerHTML = data.content;
-    createdDate.innerText = data.createdAt;
 }
 
 /**
@@ -315,7 +295,9 @@ function getData(key) {
  */
 function loadData(listItem) {
     listStyle(listItem); // 表示設定
-    listItem.scrollIntoView({ behavior: 'smooth' }); // リストをスクロール
+    listItem.scrollIntoView({ behavior: 'smooth' }); // スクロール
+
+    saveButton.disabled = false; // 保存有効化
     const key = listItem.dataset.key; // キーを取得する
 
     if (localStorage.getItem(key) != null) {
@@ -323,38 +305,22 @@ function loadData(listItem) {
         try {
             getData(key);
         } catch (error) {
-            listItem.remove();
             removeData(key);
-            loadData(saveList.firstChild);
+            saveButton.disabled = true;
             console.log(error.message);
         }
 
-        // 保存（上書き）
-        saveButton.onclick = () => {
-            save(key);
-        }
-
-        // 背景色の設定
-        closeButton.onclick = () => {
-            listStyle(listItem);
-        }
-
-        // 削除
-        deleteButton.onclick = () => {
-            listItem.remove();
-            removeData(key);
-            loadData(saveList.firstChild);
-        }
+        saveButton.onclick = () => { save(key) }; // 保存（上書き）
+        closeButton.onclick = () => { listStyle(listItem) }; // 背景色の設定
+        deleteButton.onclick = () => { removeData(key) }; // 削除
     } else {
         listItem.remove();
-        saveList.firstChild != null ? loadData(saveList.firstChild) : create();
-        console.log(`キー (${key}) の値が存在しません`);
     }
 }
 
 // ページ読み込み時
 window.onload = () => {
-    // 保存データが無い場合は新規作成する
+    // 保存データが無い場合は作成する
     if (localStorage.length === 0) {
         create();
         return;
@@ -366,7 +332,7 @@ window.onload = () => {
         keys.push(localStorage.key(i));
     }
     keys.sort();
-    keys.forEach(function (key) {
+    keys.forEach(key => {
         try {
             getData(key);
             addToList(key);
