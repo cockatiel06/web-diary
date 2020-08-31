@@ -345,6 +345,6 @@ window.onload = () => {
     // テスト
     console.assert(
         localStorage.length === saveList.childElementCount,
-        `リストの表示数が正しくありません`
+        `リストの項目数が正しくありません`
     );
 }
