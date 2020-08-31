@@ -64,7 +64,7 @@ searchButton.onclick = () => {
     closeButton.onclick();
 
     // ダイアログを表示
-    if (searchDialog.hasAttribute('open') === false) {
+    if (!searchDialog.hasAttribute('open')) {
         searchDialog.showModal();
     }
 
@@ -87,7 +87,7 @@ searchButton.onclick = () => {
         // リストの項目数ループして検索する
         let keyword = new RegExp(searchDialog.returnValue, 'i');
         for (let target of saveList.getElementsByClassName('saved-item')) {
-            if (keyword.test(target.textContent) === false) {
+            if (!keyword.test(target.textContent)) {
                 target.style.display = 'none'; // 一致しない項目は非表示にする
             }
         }
@@ -96,7 +96,7 @@ searchButton.onclick = () => {
 
 // ヘルプを表示
 helpButton.onclick = () => {
-    if (helpDialog.hasAttribute('open') === false) {
+    if (!helpDialog.hasAttribute('open')) {
         helpDialog.showModal();
     }
 }
@@ -203,14 +203,14 @@ function addToList(key) {
     text.className = 'list-text';
 
     // サムネイル（動画優先）
-    if (contentArea.getElementsByTagName('video').length > 0) {
+    if (contentArea.getElementsByTagName('video').length) {
         video.setAttribute('loop', '');
         video.setAttribute('muted', '');
         video.setAttribute('autoplay', '');
         video.setAttribute('disablepictureinpicture', '');
         video.src = contentArea.getElementsByTagName('video')[0].src;
         container.appendChild(video);
-    } else if (contentArea.getElementsByTagName('img').length > 0) {
+    } else if (contentArea.getElementsByTagName('img').length) {
         image.src = contentArea.getElementsByTagName('img')[0].src;
         container.appendChild(image);
     } else {
@@ -230,7 +230,7 @@ function addToList(key) {
     titleInput.value = null;
 
     // リストに追加する
-    if (saveList.querySelector(`li[data-key="${key}"]`) != null) {
+    if (saveList.querySelector(`li[data-key="${key}"]`)) {
         // 更新
         const savedItem = saveList.querySelector(`li[data-key="${key}"]`);
         removeAllChildren(savedItem);
@@ -266,12 +266,12 @@ function create() {
 function removeData(key) {
     // ローカルストレージとリストから削除する
     localStorage.removeItem(key);
-    if (saveList.querySelector(`li[data-key="${key}"]`) != null) {
+    if (saveList.querySelector(`li[data-key="${key}"]`)) {
         saveList.querySelector(`li[data-key="${key}"]`).remove();
     }
 
     // 最新の記事を表示（存在しない場合は作成する）
-    saveList.firstChild != null ? loadData(saveList.firstChild) : create();
+    saveList.firstChild ? loadData(saveList.firstChild) : create();
 }
 
 /**
@@ -300,7 +300,7 @@ function loadData(listItem) {
     saveButton.disabled = false; // 保存有効化
     const key = listItem.dataset.key; // キーを取得する
 
-    if (localStorage.getItem(key) != null) {
+    if (localStorage.getItem(key)) {
         // 保存データを取得して表示する
         try {
             getData(key);
